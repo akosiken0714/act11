@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-4">{{ 'Edit Profile' if student else 'Create Your Profile' }}</h2>
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.full_name.label(class="form-label") }}
+                        {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else "")) }}
+                        {% for error in form.full_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.student_number.label(class="form-label") }}
+                        {{ form.student_number(class="form-control" + (" is-invalid" if form.student_number.errors else "")) }}
+                        {% for error in form.student_number.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.program.label(class="form-label") }}
+                        {{ form.program(class="form-control" + (" is-invalid" if form.program.errors else "")) }}
+                        {% for error in form.program.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.year_level.label(class="form-label") }}
+                        {{ form.year_level(class="form-select" + (" is-invalid" if form.year_level.errors else "")) }}
+                        {% for error in form.year_level.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.contact_number.label(class="form-label") }}
+                        {{ form.contact_number(class="form-control" + (" is-invalid" if form.contact_number.errors else "")) }}
+                        {% for error in form.contact_number.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.address.label(class="form-label") }}
+                        {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else "")) }}
+                        {% for error in form.address.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">My Scholarship Applications</h2>
+                    <a href="{{ url_for('scholarship_apply') }}" class="btn btn-success btn-sm">+ New Application</a>
+                </div>
+
+                {% if not student %}
+                    <p class="text-muted">Complete your profile first to apply for a scholarship.</p>
+                {% elif applications|length == 0 %}
+                    <p class="text-muted">You have no scholarship applications yet.</p>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Scholarship</th>
+                                    <th>GPA</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Documents</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td>{{ app.scholarship_name }}</td>
+                                    <td>{{ app.gpa }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if app.status == 'Approved' else ('danger' if app.status == 'Rejected' else 'warning') }}">
+                                            {{ app.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ app.submitted_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% for doc in app.documents %}
+                                            <a href="{{ url_for('download_document', document_id=doc.id) }}" class="d-block small">{{ doc.document_type }}</a>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

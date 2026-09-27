@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4 fw-brand">Admin Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+            <div class="small text-white-50">Students</div>
+            <div class="fs-3 fw-bold">{{ stats.students }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #0ea5e9, #22d3ee);">
+            <div class="small text-white-50">Applications</div>
+            <div class="fs-3 fw-bold">{{ stats.applications }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #f97316);">
+            <div class="small text-white-50">Pending</div>
+            <div class="fs-3 fw-bold">{{ stats.pending }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #22c55e);">
+            <div class="small text-white-50">Approved</div>
+            <div class="fs-3 fw-bold">{{ stats.approved }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-4">
+        <h3 class="mb-3 fs-5 fw-brand">All Scholarship Applications</h3>
+        {% if applications|length == 0 %}
+            <p class="text-muted mb-0">No applications have been submitted yet.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Scholarship</th>
+                            <th>GPA</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Documents</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ app.student.full_name }}</div>
+                                <div class="small text-muted">{{ app.student.student_number }}</div>
+                            </td>
+                            <td>{{ app.scholarship_name }}</td>
+                            <td>{{ app.gpa }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if app.status == 'Approved' else ('danger' if app.status == 'Rejected' else 'warning') }}">
+                                    {{ app.status }}
+                                </span>
+                            </td>
+                            <td>{{ app.submitted_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% for doc in app.documents %}
+                                    <a href="{{ url_for('admin_download_document', document_id=doc.id) }}" class="d-block small">{{ doc.document_type }}</a>
+                                {% endfor %}
+                            </td>
+                            <td class="d-flex gap-1">
+                                <form method="POST" action="{{ url_for('admin_update_status', application_id=app.id) }}">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" name="status" value="Approved">
+                                    <button type="submit" class="btn btn-sm btn-outline-success" {% if app.status == 'Approved' %}disabled{% endif %}>Approve</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_update_status', application_id=app.id) }}">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" name="status" value="Rejected">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" {% if app.status == 'Rejected' %}disabled{% endif %}>Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

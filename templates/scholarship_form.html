@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Apply for Scholarship{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-4">Scholarship Application</h2>
+                <!-- enctype is required for file uploads to reach the server -->
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.scholarship_name.label(class="form-label") }}
+                        {{ form.scholarship_name(class="form-control" + (" is-invalid" if form.scholarship_name.errors else "")) }}
+                        {% for error in form.scholarship_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.gpa.label(class="form-label") }}
+                        {{ form.gpa(class="form-control" + (" is-invalid" if form.gpa.errors else ""), step="0.01") }}
+                        {% for error in form.gpa.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.reason.label(class="form-label") }}
+                        {{ form.reason(class="form-control" + (" is-invalid" if form.reason.errors else ""), rows=4) }}
+                        {% for error in form.reason.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.valid_id.label(class="form-label") }}
+                        {{ form.valid_id(class="form-control" + (" is-invalid" if form.valid_id.errors else "")) }}
+                        <div class="form-text">Accepted: JPG, JPEG, PNG, PDF, DOCX. Max total upload 5 MB.</div>
+                        {% for error in form.valid_id.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.supporting_documents.label(class="form-label") }}
+                        {{ form.supporting_documents(class="form-control" + (" is-invalid" if form.supporting_documents.errors else ""), multiple=True) }}
+                        <div class="form-text">Optional. You may select multiple files.</div>
+                        {% for error in form.supporting_documents.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
